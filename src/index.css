@@ -2,32 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* --- Mobile-safe defaults --- */
+/* --- Global mono look --- */
 * { box-sizing: border-box; }
 html, body, #root {
   margin: 0;
   padding: 0;
   width: 100%;
   max-width: 100%;
-  overflow-x: clip;            /* block sideways overflow without hiding content */
+  overflow-x: clip;
   -webkit-text-size-adjust: 100%;
 }
 
+/* Monospace everywhere */
 body {
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Noto Sans', 'Helvetica Neue', Arial;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+               "Liberation Mono", "Courier New", monospace;
+  line-height: 1.5;
 }
 
-/* Long strings should wrap instead of pushing layout */
+/* Long strings should wrap nicely */
 pre, code, kbd, samp { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
-p, li, h1, h2, h3, h4, h5, h6 { overflow-wrap: anywhere; word-break: break-word; }
 
-/* Media & embedded content never exceed viewport */
+/* Media fit */
 img, svg, canvas, iframe, video { max-width: 100%; height: auto; display: block; }
 
-/* Utility: horizontal scroll area (used inside code blocks only) */
+/* Utility */
 .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-/* Kill any accidental fixed widths on small screens */
-@media (max-width: 767.98px) {
-  [style*="width:"] { max-width: 100% !important; }
-}
+/* Optional: make headings feel “terminal‑bold” */
+h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: 0.2px; }
