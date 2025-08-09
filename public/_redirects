@@ -1,1 +1,5 @@
-/*   /index.html   200
+
+/whitepaper.md               /whitepaper.md               200
+/whitepaper_assets/*         /whitepaper_assets/:splat    200
+/assets/*                    /assets/:splat               200
+/*                           /index.html                  200
