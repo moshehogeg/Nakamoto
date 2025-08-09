@@ -7,6 +7,8 @@ import {
 } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 /* ---------- Config ---------- */
 const DEFAULT_NODE_URL = (import.meta as any)?.env?.VITE_DEFAULT_NODE_URL || "http://127.0.0.1:8545/api";
@@ -90,7 +92,6 @@ const json = await res.json();`;
 
     return (
       <div className="space-y-4">
-        {/* inputs: stack on mobile, split on sm+ */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <label className="text-sm">Node URL
             <input value={nodeUrl} onChange={e => setNodeUrl(e.target.value)}
@@ -138,7 +139,6 @@ const json = await res.json();`;
           <small className="text-gray-500">{meta.desc}</small>
         </div>
 
-        {/* code blocks: stack on mobile, scrollable horizontally */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <CodeBlock title="cURL" code={curl} />
           <CodeBlock title="JavaScript" code={js} />
@@ -155,7 +155,7 @@ const json = await res.json();`;
   }
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-gradient-to-b from-slate-50 to-white text-slate-900">
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-gradient-to-b from-slate-50 to-white text-slate-900 font-mono">
       {/* Header */}
       <header className="sticky top-0 z-30 backdrop-blur bg-white/85 border-b">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2">
@@ -172,7 +172,7 @@ const json = await res.json();`;
         </div>
       </header>
 
-      {/* Layout: sidebar hidden on mobile, main takes full width */}
+      {/* Layout */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4 sm:gap-6 py-4 sm:py-6">
         <aside className="space-y-2 hidden md:block">
           <NavList active={active} setActive={setActive} nodeUrl={nodeUrl} />
@@ -314,7 +314,7 @@ curl -s ${getNodeUrl()}/getNetworkInfo | jq`;
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card title="Consensus" icon={<GitBranch className="w-4 h-4" />}><p className="text-sm">
-          HotStuff pipeline: propose → prevote → precommit → commit. Finality when QC ≥ 2/3 and PoV ≥ 67%.
+          HotStuff pipeline: propose → prevote → precommit → commit. Finality when QC ≥ 2/3 & PoV ≥ 67%.
         </p></Card>
         <Card title="Mobile Verifier" icon={<Smartphone className="w-4 h-4" />}><p className="text-sm">
           Phones verify zk-proof in ~80ms and sample k=50 chunks (DAS). Attestations are rewarded.
@@ -441,25 +441,28 @@ function StatusCard() {
   );
 }
 
+/* ---------- White Paper (Markdown reader) ---------- */
 function WhitePaper() {
-  const pdfUrl = "/whitepaper.pdf";
+  const [md, setMd] = useState<string>("");
+  const [err, setErr] = useState<string>("");
+
+  useEffect(() => {
+    fetch("/whitepaper.md")
+      .then(r => r.ok ? r.text() : Promise.reject(`${r.status} ${r.statusText}`))
+      .then(setMd)
+      .catch(e => setErr(String(e)));
+  }, []);
+
   return (
     <div className="space-y-4">
       <Card title="White Paper" icon={<BookOpen className="w-4 h-4" />}>
-        <p className="text-sm mb-3">
-          View the white paper below or <a href={pdfUrl} download className="underline">download the PDF</a>.
-        </p>
-        <div className="rounded-xl border overflow-hidden bg-white">
-          <iframe
-            src={pdfUrl}
-            title="Nakamoto White Paper"
-            className="w-full max-w-full"
-            style={{ height: "70vh", border: 0, display: "block" }}
-          />
-        </div>
-        <p className="text-xs text-gray-500 mt-2">
-          If the inline viewer doesn’t load on your device, <a href={pdfUrl} className="underline" target="_blank" rel="noreferrer">open the PDF in a new tab</a>.
-        </p>
+        {err && <p className="text-sm text-red-600">Failed to load whitepaper.md: {err}</p>}
+        {!md && !err && <p className="text-sm text-gray-600">Loading…</p>}
+        {!!md && (
+          <article className="prose prose-slate max-w-none prose-headings:scroll-mt-20">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{md}</ReactMarkdown>
+          </article>
+        )}
       </Card>
     </div>
   );
