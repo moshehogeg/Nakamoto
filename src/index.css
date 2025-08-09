@@ -9,7 +9,7 @@ html, body, #root {
   padding: 0;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;           /* stop page-level sideways scroll */
+  overflow-x: clip;            /* block sideways overflow without hiding content */
   -webkit-text-size-adjust: 100%;
 }
 
@@ -17,21 +17,17 @@ body {
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Noto Sans', 'Helvetica Neue', Arial;
 }
 
-/* Long strings (addresses, hashes) must break instead of pushing layout */
-pre, code { white-space: pre-wrap; word-break: break-word; }
-code, pre {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-}
+/* Long strings should wrap instead of pushing layout */
+pre, code, kbd, samp { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+p, li, h1, h2, h3, h4, h5, h6 { overflow-wrap: anywhere; word-break: break-word; }
 
-/* Media should never exceed viewport width */
-img, svg, canvas, iframe, video {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
+/* Media & embedded content never exceed viewport */
+img, svg, canvas, iframe, video { max-width: 100%; height: auto; display: block; }
 
-/* Tailwind helper when content is wider than container */
-.scroll-x {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+/* Utility: horizontal scroll area (used inside code blocks only) */
+.scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Kill any accidental fixed widths on small screens */
+@media (max-width: 767.98px) {
+  [style*="width:"] { max-width: 100% !important; }
 }
