@@ -7,8 +7,6 @@ import {
 } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 /* ---------- Config ---------- */
 const DEFAULT_NODE_URL = (import.meta as any)?.env?.VITE_DEFAULT_NODE_URL || "http://127.0.0.1:8545/api";
@@ -35,17 +33,6 @@ function useClipboard(text: string, timeout = 1500) {
     }
   };
 }
-
-/* ---------- Nav ---------- */
-const nav = [
-  { key: "getting-started", label: "Getting Started", icon: <Rocket className="w-4 h-4" /> },
-  { key: "api",             label: "API Playground", icon: <PlugZap className="w-4 h-4" /> },
-  { key: "sdks",            label: "SDKs & Snippets", icon: <Code2 className="w-4 h-4" /> },
-  { key: "tutorials",       label: "Tutorials", icon: <BookOpen className="w-4 h-4" /> },
-  { key: "vectors",         label: "Test Vectors", icon: <Database className="w-4 h-4" /> },
-  { key: "status",          label: "Network Status", icon: <Gauge className="w-4 h-4" /> },
-  { key: "whitepaper",      label: "White Paper", icon: <BookOpen className="w-4 h-4" /> },
-];
 
 /* ---------- App ---------- */
 export default function DevPortal() {
@@ -441,28 +428,35 @@ function StatusCard() {
   );
 }
 
-/* ---------- White Paper (Markdown reader) ---------- */
+/* ---------- White Paper (PDF viewer) ---------- */
 function WhitePaper() {
-  const [md, setMd] = useState<string>("");
-  const [err, setErr] = useState<string>("");
-
-  useEffect(() => {
-    fetch("/whitepaper.md")
-      .then(r => r.ok ? r.text() : Promise.reject(`${r.status} ${r.statusText}`))
-      .then(setMd)
-      .catch(e => setErr(String(e)));
-  }, []);
-
+  const pdfUrl = "/whitepaper.pdf";
   return (
     <div className="space-y-4">
       <Card title="White Paper" icon={<BookOpen className="w-4 h-4" />}>
-        {err && <p className="text-sm text-red-600">Failed to load whitepaper.md: {err}</p>}
-        {!md && !err && <p className="text-sm text-gray-600">Loading…</p>}
-        {!!md && (
-          <article className="prose prose-slate max-w-none prose-headings:scroll-mt-20">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{md}</ReactMarkdown>
-          </article>
-        )}
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <a href={pdfUrl} download className="px-3 py-2 rounded-lg border bg-white/70 hover:bg-white">
+            ⬇️ Download PDF
+          </a>
+          <a href={pdfUrl} target="_blank" rel="noreferrer" className="px-3 py-2 rounded-lg border bg-white/70 hover:bg-white">
+            Open in new tab
+          </a>
+        </div>
+        <div className="rounded-xl overflow-hidden border bg-white/60">
+          <iframe
+            src={pdfUrl}
+            title="Nakamoto White Paper"
+            className="w-full"
+            style={{ height: "80vh", border: "0" }}
+          />
+        </div>
+        <p className="text-sm text-gray-600 mt-2">
+          If the PDF does not display,{" "}
+          <a href={pdfUrl} className="underline" target="_blank" rel="noreferrer">
+            open it in a new tab
+          </a>{" "}
+          or use the download button above.
+        </p>
       </Card>
     </div>
   );
