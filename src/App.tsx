@@ -155,7 +155,7 @@ const json = await res.json();`;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900">
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-gradient-to-b from-slate-50 to-white text-slate-900">
       {/* Header */}
       <header className="sticky top-0 z-30 backdrop-blur bg-white/85 border-b">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2">
@@ -173,7 +173,7 @@ const json = await res.json();`;
       </header>
 
       {/* Layout: sidebar hidden on mobile, main takes full width */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 grid md:grid-cols-[260px_1fr] gap-4 sm:gap-6 py-4 sm:py-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4 sm:gap-6 py-4 sm:py-6">
         <aside className="space-y-2 hidden md:block">
           <NavList active={active} setActive={setActive} nodeUrl={nodeUrl} />
         </aside>
@@ -257,17 +257,17 @@ function Card({ title, icon, children }:{ title:string; icon?:React.ReactNode; c
 function CodeBlock({ title, code }:{ title:string; code:string; }) {
   const { copied, copy } = useClipboard(code);
   return (
-    <div className="relative">
-      <div className="absolute right-2 top-2 flex items-center gap-2">
+    <div className="relative max-w-full">
+      <div className="absolute right-2 top-2 flex items-center gap-2 z-10">
         <button onClick={copy} className="px-2 py-1 rounded-md border bg-white/70 text-xs flex items-center gap-1">
           {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      <div className="rounded-xl overflow-hidden border">
+      <div className="rounded-xl overflow-hidden border max-w-full">
         <div className="px-3 py-2 text-xs font-semibold bg-slate-100 border-b">{title}</div>
-        <div className="overflow-x-auto"> {/* key for mobile */}
-          <SyntaxHighlighter language="bash" style={oneDark} customStyle={{ margin: 0, borderRadius: 0, minWidth: 320 }}>
+        <div className="scroll-x max-w-full">
+          <SyntaxHighlighter language="bash" style={oneDark} customStyle={{ margin: 0, borderRadius: 0 }}>
             {code}
           </SyntaxHighlighter>
         </div>
@@ -453,8 +453,8 @@ function WhitePaper() {
           <iframe
             src={pdfUrl}
             title="Nakamoto White Paper"
-            className="w-full"
-            style={{ height: "70vh", border: 0 }}
+            className="w-full max-w-full"
+            style={{ height: "70vh", border: 0, display: "block" }}
           />
         </div>
         <p className="text-xs text-gray-500 mt-2">
