@@ -8,6 +8,7 @@ import {
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
+/* ---------- Config ---------- */
 const DEFAULT_NODE_URL = (import.meta as any)?.env?.VITE_DEFAULT_NODE_URL || "http://127.0.0.1:8545/api";
 const getNodeUrl = () => localStorage.getItem("nak_node_url") || DEFAULT_NODE_URL;
 
@@ -33,16 +34,18 @@ function useClipboard(text: string, timeout = 1500) {
   };
 }
 
+/* ---------- Nav ---------- */
 const nav = [
   { key: "getting-started", label: "Getting Started", icon: <Rocket className="w-4 h-4" /> },
-  { key: "api", label: "API Playground", icon: <PlugZap className="w-4 h-4" /> },
-  { key: "sdks", label: "SDKs & Snippets", icon: <Code2 className="w-4 h-4" /> },
-  { key: "tutorials", label: "Tutorials", icon: <BookOpen className="w-4 h-4" /> },
-  { key: "vectors", label: "Test Vectors", icon: <Database className="w-4 h-4" /> },
-  { key: "status", label: "Network Status", icon: <Gauge className="w-4 h-4" /> },
-  { key: "whitepaper", label: "White Paper", icon: <BookOpen className="w-4 h-4" /> },
+  { key: "api",             label: "API Playground", icon: <PlugZap className="w-4 h-4" /> },
+  { key: "sdks",            label: "SDKs & Snippets", icon: <Code2 className="w-4 h-4" /> },
+  { key: "tutorials",       label: "Tutorials", icon: <BookOpen className="w-4 h-4" /> },
+  { key: "vectors",         label: "Test Vectors", icon: <Database className="w-4 h-4" /> },
+  { key: "status",          label: "Network Status", icon: <Gauge className="w-4 h-4" /> },
+  { key: "whitepaper",      label: "White Paper", icon: <BookOpen className="w-4 h-4" /> },
 ];
 
+/* ---------- App ---------- */
 export default function DevPortal() {
   const [active, setActive] = useState("getting-started");
   const [search, setSearch] = useState("");
@@ -87,12 +90,16 @@ const json = await res.json();`;
 
     return (
       <div className="space-y-4">
-        <div className="grid sm:grid-cols-2 gap-3">
+        {/* inputs: stack on mobile, split on sm+ */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <label className="text-sm">Node URL
-            <input value={nodeUrl} onChange={e => setNodeUrl(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-md border bg-white/50" placeholder="http://127.0.0.1:8545/api" />
+            <input value={nodeUrl} onChange={e => setNodeUrl(e.target.value)}
+                   className="w-full mt-1 px-3 py-2 rounded-md border bg-white/60"
+                   placeholder="http://127.0.0.1:8545/api" />
           </label>
           <label className="text-sm">Endpoint
-            <select value={endpoint} onChange={e => setEndpoint(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-md border bg-white/50">
+            <select value={endpoint} onChange={e => setEndpoint(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-md border bg-white/60">
               <option value="getBlockHeader">GET /getBlockHeader</option>
               <option value="getBalance">GET /getBalance</option>
               <option value="getUTXO">GET /getUTXO</option>
@@ -103,40 +110,44 @@ const json = await res.json();`;
           </label>
         </div>
 
-        <div className="grid sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {endpoint === "getBlockHeader" && (
             <label className="text-sm">height
-              <input type="number" value={params.height ?? ""} onChange={e => setParams((p: any) => ({ ...p, height: Number(e.target.value) }))} className="w-full mt-1 px-3 py-2 rounded-md border bg-white/50" placeholder="100" />
+              <input type="number" value={params.height ?? ""} onChange={e => setParams((p: any) => ({ ...p, height: Number(e.target.value) }))}
+                     className="w-full mt-1 px-3 py-2 rounded-md border bg-white/60" placeholder="100" />
             </label>
           )}
           {(endpoint === "getBalance" || endpoint === "getUTXO") && (
             <label className="text-sm">address
-              <input value={params.address || ""} onChange={e => setParams((p: any) => ({ ...p, address: e.target.value }))} className="w-full mt-1 px-3 py-2 rounded-md border bg-white/50" placeholder="nak1q..." />
+              <input value={params.address || ""} onChange={e => setParams((p: any) => ({ ...p, address: e.target.value }))}
+                     className="w-full mt-1 px-3 py-2 rounded-md border bg-white/60 break-all" placeholder="nak1q..." />
             </label>
           )}
           {endpoint === "sendRawTransaction" && (
             <label className="text-sm sm:col-span-3">rawTx hex
-              <textarea value={params.hex || ""} onChange={e => setParams((p: any) => ({ ...p, hex: e.target.value }))} className="w-full mt-1 px-3 py-2 rounded-md border bg-white/50 h-28" placeholder="02000000..." />
+              <textarea value={params.hex || ""} onChange={e => setParams((p: any) => ({ ...p, hex: e.target.value }))}
+                        className="w-full mt-1 px-3 py-2 rounded-md border bg-white/60 h-32" placeholder="02000000..." />
             </label>
           )}
         </div>
 
-        <div className="flex gap-2 items-center">
+        <div className="flex flex-wrap gap-2 items-center">
           <button onClick={run} className="px-4 py-3 rounded-lg bg-black text-white flex items-center gap-2 disabled:opacity-50 active:scale-[.99]" disabled={loading}>
             <Play className="w-4 h-4" />{loading ? "Running…" : "Run"}
           </button>
           <small className="text-gray-500">{meta.desc}</small>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
+        {/* code blocks: stack on mobile, scrollable horizontally */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <CodeBlock title="cURL" code={curl} />
           <CodeBlock title="JavaScript" code={js} />
         </div>
 
         <div>
           <h4 className="font-semibold mb-2">Response</h4>
-          <div className="rounded-lg border bg-white/50 p-3 overflow-auto max-h-[60vh]">
-            <pre className="text-sm whitespace-pre-wrap">{resp ? JSON.stringify(resp, null, 2) : "—"}</pre>
+          <div className="rounded-lg border bg-white/60 p-3 overflow-auto max-h-[60vh]">
+            <pre className="text-sm whitespace-pre-wrap break-words">{resp ? JSON.stringify(resp, null, 2) : "—"}</pre>
           </div>
         </div>
       </div>
@@ -146,7 +157,7 @@ const json = await res.json();`;
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900">
       {/* Header */}
-      <header className="sticky top-0 z-30 backdrop-blur bg-white/80 border-b">
+      <header className="sticky top-0 z-30 backdrop-blur bg-white/85 border-b">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2">
           <button onClick={() => setDrawerOpen(true)} className="md:hidden p-2 rounded-lg border bg-white/70 active:scale-[.98]" aria-label="Open menu">
             <Menu className="w-5 h-5" />
@@ -155,19 +166,18 @@ const json = await res.json();`;
           <h1 className="font-bold text-base sm:text-lg">Nakamoto Developer Portal</h1>
           <div className="ml-auto relative hidden sm:block">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search docs…" className="pl-9 pr-3 py-2 rounded-lg border bg-white/60 w-[260px]" />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search docs…"
+                   className="pl-9 pr-3 py-2 rounded-lg border bg-white/60 w-[260px]" />
           </div>
         </div>
       </header>
 
-      {/* Layout */}
+      {/* Layout: sidebar hidden on mobile, main takes full width */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 grid md:grid-cols-[260px_1fr] gap-4 sm:gap-6 py-4 sm:py-6">
-        {/* Sidebar (desktop) */}
         <aside className="space-y-2 hidden md:block">
           <NavList active={active} setActive={setActive} nodeUrl={nodeUrl} />
         </aside>
 
-        {/* Main */}
         <main className="pb-20">
           {active === "getting-started" && <GettingStarted />}
           {active === "api" && <EndpointForm />}
@@ -179,7 +189,7 @@ const json = await res.json();`;
         </main>
       </div>
 
-      {/* Drawer (mobile) */}
+      {/* Mobile drawer */}
       {drawerOpen && (
         <div className="fixed inset-0 z-40">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
@@ -202,7 +212,7 @@ const json = await res.json();`;
   );
 }
 
-/* --- components --- */
+/* ---------- Reusable UI ---------- */
 
 function NavList({ active, setActive, nodeUrl }:{ active:string; setActive:(k:string)=>void; nodeUrl:string; }) {
   const items = [
@@ -256,13 +266,17 @@ function CodeBlock({ title, code }:{ title:string; code:string; }) {
       </div>
       <div className="rounded-xl overflow-hidden border">
         <div className="px-3 py-2 text-xs font-semibold bg-slate-100 border-b">{title}</div>
-        <SyntaxHighlighter language="bash" style={oneDark} customStyle={{ margin: 0, borderRadius: 0 }}>
-          {code}
-        </SyntaxHighlighter>
+        <div className="overflow-x-auto"> {/* key for mobile */}
+          <SyntaxHighlighter language="bash" style={oneDark} customStyle={{ margin: 0, borderRadius: 0, minWidth: 320 }}>
+            {code}
+          </SyntaxHighlighter>
+        </div>
       </div>
     </div>
   );
 }
+
+/* ---------- Content Sections ---------- */
 
 function GettingStarted() {
   const curl = `# 1) Build node
@@ -275,7 +289,8 @@ cargo build --release
 curl -s ${getNodeUrl()}/getNetworkInfo | jq`;
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid md:grid-cols-2 gap-4">
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card title="What is Nakamoto?" icon={<Shield className="w-4 h-4" />}>
           <p className="text-sm leading-6">
             Nakamoto is a mobile-native, zk-verified Layer 1 with DPoS + HotStuff finality and a Proof-of-Verification
@@ -291,11 +306,13 @@ curl -s ${getNodeUrl()}/getNetworkInfo | jq`;
           </ul>
         </Card>
       </motion.div>
+
       <Card title="Quickstart" icon={<TerminalSquare className="w-4 h-4" />}>
         <p className="text-sm mb-3">Use these commands to compile and query a local node.</p>
         <CodeBlock title="Shell" code={curl} />
       </Card>
-      <div className="grid md:grid-cols-3 gap-4">
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card title="Consensus" icon={<GitBranch className="w-4 h-4" />}><p className="text-sm">
           HotStuff pipeline: propose → prevote → precommit → commit. Finality when QC ≥ 2/3 and PoV ≥ 67%.
         </p></Card>
@@ -394,7 +411,7 @@ P_fail_all = (1-P_detect_single)^c ≈ 1.2e-55`;
 - QC ≥ 2/3
 - PoV ≥ 67%`;
   return (
-    <div className="grid md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <Card title="Address Vector" icon={<Code2 className="w-4 h-4" />}><SyntaxHighlighter language="text" style={oneDark}>{addrVec}</SyntaxHighlighter></Card>
       <Card title="DAS Math" icon={<Database className="w-4 h-4" />}><SyntaxHighlighter language="text" style={oneDark}>{das}</SyntaxHighlighter></Card>
       <Card title="Finality Rule" icon={<Shield className="w-4 h-4" />}><SyntaxHighlighter language="text" style={oneDark}>{finality}</SyntaxHighlighter></Card>
@@ -415,10 +432,10 @@ function StatusCard() {
   return (
     <div className="space-y-4">
       <Card title="Network Info" icon={<Server className="w-4 h-4" />}>
-        <pre className="text-sm whitespace-pre-wrap">{info ? JSON.stringify(info, null, 2) : (err || "—")}</pre>
+        <pre className="text-sm whitespace-pre-wrap break-words">{info ? JSON.stringify(info, null, 2) : (err || "—")}</pre>
       </Card>
       <Card title="Sync Status" icon={<Gauge className="w-4 h-4" />}>
-        <pre className="text-sm whitespace-pre-wrap">{sync ? JSON.stringify(sync, null, 2) : "—"}</pre>
+        <pre className="text-sm whitespace-pre-wrap break-words">{sync ? JSON.stringify(sync, null, 2) : "—"}</pre>
       </Card>
     </div>
   );
